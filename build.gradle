@@ -1,0 +1,73 @@
+plugins {
+    id 'java-library'
+}
+
+group   = 'pics.snapapi'
+version = '3.1.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+    withJavadocJar()
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly    'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+            'Implementation-Title':   'SnapAPI Java SDK',
+            'Implementation-Version': version,
+        )
+    }
+}
+
+// Publishing — fill in credentials when deploying to Maven Central
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'snapapi-java'
+            from components.java
+            pom {
+                name        = 'SnapAPI Java SDK'
+                description = 'Official Java SDK for SnapAPI — screenshot, scrape, extract, PDF, video, analyze API'
+                url         = 'https://snapapi.pics'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url  = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+                developers {
+                    developer {
+                        id    = 'snapapi'
+                        name  = 'SnapAPI Team'
+                        email = 'sdk@snapapi.pics'
+                    }
+                }
+                scm {
+                    url = 'https://github.com/Sleywill/snapapi-java'
+                }
+            }
+        }
+    }
+}
+
+apply plugin: 'maven-publish'

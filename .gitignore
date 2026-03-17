@@ -1,0 +1,10 @@
+target/
+build/
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+.gradle/
+.idea/
+*.iml
+out/
+.claude/

@@ -4,8 +4,8 @@ Official Java SDK for [SnapAPI](https://snapapi.pics) — the lightning-fast scr
 
 ## Requirements
 
-- Java 17+
-- Zero runtime dependencies (uses `java.net.http.HttpClient` and pattern matching for `instanceof`)
+- Java 11+
+- Zero runtime dependencies (uses `java.net.http.HttpClient` built into Java 11)
 
 ## Installation
 
@@ -15,20 +15,20 @@ Official Java SDK for [SnapAPI](https://snapapi.pics) — the lightning-fast scr
 <dependency>
     <groupId>pics.snapapi</groupId>
     <artifactId>snapapi-java</artifactId>
-    <version>3.1.0</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
 ### Gradle (Kotlin DSL)
 
 ```kotlin
-implementation("pics.snapapi:snapapi-java:3.1.0")
+implementation("pics.snapapi:snapapi-java:1.0.0")
 ```
 
 ### Gradle (Groovy DSL)
 
 ```groovy
-implementation 'pics.snapapi:snapapi-java:3.1.0'
+implementation 'pics.snapapi:snapapi-java:1.0.0'
 ```
 
 ## Quick Start
@@ -36,6 +36,8 @@ implementation 'pics.snapapi:snapapi-java:3.1.0'
 ```java
 import pics.snapapi.SnapAPIClient;
 import pics.snapapi.models.ScreenshotOptions;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 SnapAPIClient client = SnapAPIClient.builder()
     .apiKey("sk_live_...")
@@ -52,12 +54,12 @@ Files.write(Path.of("screenshot.png"), png);
 ## Features
 
 - **Zero runtime dependencies** — uses only `java.net.http.HttpClient` (Java 11+)
-- **Builder pattern** for all option classes — `ScreenshotOptions.builder()...build()`
+- **Builder pattern** for client and all options — `SnapAPIClient.builder()...build()`
 - **Automatic retries** with exponential backoff on 429 / 5xx
 - **Rate limit handling** with `Retry-After` header support
-- **Typed exceptions** per error category
-- **All endpoints** — screenshot, scrape, extract, PDF, video, OG image, analyze
-- **Java 11+** compatible
+- **Typed exception hierarchy** — `AuthException`, `RateLimitException`, `QuotaException`, etc.
+- **All endpoints** — screenshot, PDF, scrape, extract, video, OG image, analyze, usage, ping
+- **Convenience methods** — `screenshotToFile`, `pdfToFile`, `extractMarkdown`, `extractArticle`, etc.
 
 ## Configuration
 
@@ -65,8 +67,8 @@ Files.write(Path.of("screenshot.png"), png);
 SnapAPIClient client = SnapAPIClient.builder()
     .apiKey("sk_live_...")
     .baseUrl("https://api.snapapi.pics")  // Default
-    .timeoutSecs(60)                       // Default: 60
-    .maxRetries(3)                          // Auto-retry on 429/5xx. Default: 3
+    .timeoutSecs(60)                       // Default: 60s
+    .maxRetries(3)                         // Auto-retry on 429/5xx. Default: 3
     .initialDelayMs(500)                   // Initial backoff. Default: 500ms
     .build();
 ```
@@ -137,13 +139,6 @@ byte[] png = client.screenshot(ScreenshotOptions.builder()
     .hasTouch(true)
     .deviceScaleFactor(2.0)
     .build());
-
-// With custom delay and wait
-byte[] png = client.screenshot(ScreenshotOptions.builder()
-    .url("https://example.com")
-    .delay(2000)
-    .waitForSelector("#content")
-    .build());
 ```
 
 **Key options:**
@@ -154,13 +149,13 @@ byte[] png = client.screenshot(ScreenshotOptions.builder()
 | `html` | String | Raw HTML string to render |
 | `markdown` | String | Markdown string to render |
 | `format` | String | `"png"`, `"jpeg"`, `"webp"`, `"avif"` (default: `"png"`) |
-| `quality` | int | Quality 1-100 (JPEG/WebP) |
+| `quality` | int | Quality 1–100 (JPEG/WebP) |
 | `width` | int | Viewport width (default: 1280) |
 | `height` | int | Viewport height (default: 800) |
 | `fullPage` | boolean | Capture full scrollable page |
 | `selector` | String | CSS selector — capture that element only |
 | `delay` | int | Extra delay before capture (ms) |
-| `waitForSelector` | String | Wait for this CSS selector |
+| `waitForSelector` | String | Wait for this CSS selector to appear |
 | `darkMode` | boolean | Emulate dark mode |
 | `blockAds` | boolean | Block ad networks |
 | `blockTrackers` | boolean | Block trackers |
@@ -199,14 +194,6 @@ byte[] pdf = client.pdf(PdfOptions.builder()
 byte[] pdf = client.pdf(PdfOptions.builder()
     .html("<h1>Invoice #1234</h1><p>Amount: $99.00</p>")
     .pageSize("a4")
-    .build());
-
-// With header and footer
-byte[] pdf = client.pdf(PdfOptions.builder()
-    .url("https://example.com")
-    .displayHeaderFooter(true)
-    .headerTemplate("<div style='font-size:10px'>Report</div>")
-    .footerTemplate("<div style='font-size:10px'>Page <span class='pageNumber'></span></div>")
     .build());
 ```
 
@@ -288,6 +275,7 @@ byte[] video = client.video(VideoOptions.builder()
     .format("mp4")
     .duration(10)
     .scrolling(true)
+    .scrollSpeed(200)
     .width(1280)
     .height(720)
     .build());
@@ -308,7 +296,7 @@ byte[] gif = client.video(VideoOptions.builder()
 ### OG Image
 
 ```java
-// Default 1200×630 PNG
+// Default 1200x630 PNG
 byte[] og = client.ogImage("https://example.com");
 Files.write(Path.of("og.png"), og);
 
@@ -335,11 +323,11 @@ byte[] json = client.analyze(AnalyzeOptions.builder()
 
 ---
 
-### Usage & Quota
+### Usage and Quota
 
 ```java
 byte[] json = client.getUsage();
-// Parses to: {"used":42,"limit":1000,"remaining":958,"resetAt":"..."}
+// {"used":42,"limit":1000,"remaining":958,"resetAt":"..."}
 
 // Alias
 byte[] json = client.quota();
@@ -397,7 +385,7 @@ try {
 
 ## Parsing Responses
 
-The SDK returns raw `byte[]` for JSON responses to avoid a mandatory JSON library dependency. Parse them with your preferred library:
+The SDK returns raw `byte[]` for JSON responses to avoid forcing a JSON library dependency. Parse with your preferred library:
 
 ### With Jackson
 
@@ -435,7 +423,7 @@ System.out.println(obj.getString("status")); // "ok"
 
 ## Retry Logic
 
-Automatic retries are enabled for:
+Automatic retries are enabled by default for:
 - **HTTP 429** (rate limited) — waits for the `Retry-After` header value.
 - **HTTP 5xx** (server errors) — exponential backoff.
 - **Network timeouts** — exponential backoff.
@@ -471,7 +459,7 @@ mvn test
 ./gradlew test
 ```
 
-Tests use an embedded JDK `HttpServer` — no network access required.
+Tests use OkHttp MockWebServer — no real network access required.
 
 ---
 
@@ -481,13 +469,13 @@ Tests use an embedded JDK `HttpServer` — no network access required.
 git clone https://github.com/Sleywill/snapapi-java
 cd snapapi-java
 
-# Compile with Maven
+# Compile
 mvn compile
 
 # Run tests
 mvn test
 
-# Build jar
+# Build JAR
 mvn package -DskipTests
 ```
 
@@ -502,5 +490,4 @@ MIT — see [LICENSE](LICENSE).
 - [SnapAPI Website](https://snapapi.pics)
 - [API Documentation](https://snapapi.pics/docs)
 - [GitHub](https://github.com/Sleywill/snapapi-java)
-- [Maven Central](https://central.sonatype.com/artifact/pics.snapapi/snapapi-java)
 - [Report Issues](https://github.com/Sleywill/snapapi-java/issues)

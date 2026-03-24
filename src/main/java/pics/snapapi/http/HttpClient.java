@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 public final class HttpClient {
 
     /** SDK version injected into the {@code User-Agent} header. */
-    public static final String SDK_VERSION = "1.0.0";
+    public static final String SDK_VERSION = "2.1.0";
 
     private final String                  baseUrl;
     private final String                  apiKey;

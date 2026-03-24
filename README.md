@@ -15,20 +15,20 @@ Official Java SDK for [SnapAPI](https://snapapi.pics) — the lightning-fast scr
 <dependency>
     <groupId>pics.snapapi</groupId>
     <artifactId>snapapi-java</artifactId>
-    <version>1.0.0</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 
 ### Gradle (Kotlin DSL)
 
 ```kotlin
-implementation("pics.snapapi:snapapi-java:1.0.0")
+implementation("pics.snapapi:snapapi-java:2.1.0")
 ```
 
 ### Gradle (Groovy DSL)
 
 ```groovy
-implementation 'pics.snapapi:snapapi-java:1.0.0'
+implementation 'pics.snapapi:snapapi-java:2.1.0'
 ```
 
 ## Quick Start

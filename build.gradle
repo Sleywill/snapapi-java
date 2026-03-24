@@ -1,14 +1,14 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
 group   = 'pics.snapapi'
-version = '3.1.0'
+version = '2.1.0'
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
     withJavadocJar()
     withSourcesJar()
 }
@@ -21,6 +21,7 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly    'org.junit.platform:junit-platform-launcher'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
 }
 
 test {
@@ -69,5 +70,3 @@ publishing {
         }
     }
 }
-
-apply plugin: 'maven-publish'

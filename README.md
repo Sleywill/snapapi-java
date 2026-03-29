@@ -2,6 +2,11 @@
 
 Official Java SDK for [SnapAPI](https://snapapi.pics) — the lightning-fast screenshot, scrape, extract, PDF, video, and AI-analyze API.
 
+[![Maven Central](https://img.shields.io/maven-central/v/pics.snapapi/snapapi-java?label=maven-central&color=C71A36)](https://central.sonatype.com/artifact/pics.snapapi/snapapi-java)
+[![CI](https://github.com/Sleywill/snapapi-java/actions/workflows/ci.yml/badge.svg)](https://github.com/Sleywill/snapapi-java/actions)
+[![Java 11+](https://img.shields.io/badge/Java-11%2B-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 ## Requirements
 
 - Java 11+
@@ -481,6 +486,15 @@ mvn package -DskipTests
 
 ---
 
+## Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before submitting a PR.
+
+Found a bug? [Open an issue](https://github.com/Sleywill/snapapi-java/issues/new?template=bug_report.md).
+Have an idea? [Request a feature](https://github.com/Sleywill/snapapi-java/issues/new?template=feature_request.md).
+
+---
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
@@ -489,5 +503,7 @@ MIT — see [LICENSE](LICENSE).
 
 - [SnapAPI Website](https://snapapi.pics)
 - [API Documentation](https://snapapi.pics/docs)
+- [Maven Central](https://central.sonatype.com/artifact/pics.snapapi/snapapi-java)
 - [GitHub](https://github.com/Sleywill/snapapi-java)
+- [Changelog](./CHANGELOG.md)
 - [Report Issues](https://github.com/Sleywill/snapapi-java/issues)
